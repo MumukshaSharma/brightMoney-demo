@@ -1,19 +1,7 @@
-import { serve } from "inngest/next";
+export async function GET() {
+  return Response.json({ message: "Inngest disabled" });
+}
 
-import { inngest } from "@/lib/inngest/client";
-import {
-  checkBudgetAlerts,
-  generateMonthlyReports,
-  processRecurringTransaction,
-  triggerRecurringTransactions,
-} from "@/lib/inngest/function";
-
-export const { GET, POST, PUT } = serve({
-  client: inngest,
-  functions: [
-    processRecurringTransaction,
-    triggerRecurringTransactions,
-    generateMonthlyReports,
-    checkBudgetAlerts,
-  ],
-});
+export async function POST() {
+  return Response.json({ message: "Inngest disabled" });
+}
