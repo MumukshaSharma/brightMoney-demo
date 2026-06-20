@@ -1,5 +1,6 @@
 "use client";
 
+import { categorizeTransaction } from "@/app/lib/categorize";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,6 +75,7 @@ export function AddTransactionForm({
             isRecurring: false,
           },
   });
+  const selectedCategory = watch("category");
 
   const {
     loading: transactionLoading,
@@ -203,9 +205,9 @@ export function AddTransactionForm({
       <div className="space-y-2">
         <label className="text-sm font-medium">Category</label>
         <Select
-          onValueChange={(value) => setValue("category", value)}
-          defaultValue={getValues("category")}
-        >
+  value={selectedCategory}
+  onValueChange={(value) => setValue("category", value)}
+>
           <SelectTrigger>
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
@@ -258,7 +260,28 @@ export function AddTransactionForm({
       {/* Description */}
       <div className="space-y-2">
         <label className="text-sm font-medium">Description</label>
-        <Input placeholder="Enter description" {...register("description")} />
+        <Input
+  placeholder="Enter description"
+  {...register("description")}
+  onBlur={(e) => {
+    const predictedCategory = categorizeTransaction(e.target.value);
+
+    if (predictedCategory) {
+      const matchingCategory = filteredCategories.find(
+        (cat) =>
+          cat.name.toLowerCase() === predictedCategory.toLowerCase()
+      );
+
+      if (matchingCategory) {
+        setValue("category", matchingCategory.id);
+
+        toast.success(
+          `Category automatically selected: ${matchingCategory.name}`
+        );
+      }
+    }
+  }}
+/>
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
